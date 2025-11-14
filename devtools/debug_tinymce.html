@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TinyMCE HTML Structure Debug</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        .debug-container {
+            max-width: 1000px;
+            margin: 20px auto;
+            padding: 20px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        .debug-output {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        .instructions {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body style="background: #f0f4f8;">
+    <div class="debug-container">
+        <h2>TinyMCE HTML Structure Debug Tool</h2>
+
+        <div class="instructions">
+            <h3>Instructions:</h3>
+            <ol>
+                <li>Create a post with nested lists in your TinyMCE editor</li>
+                <li>Save the post</li>
+                <li>View the source HTML of the saved post</li>
+                <li>Copy the HTML from the post content area</li>
+                <li>Paste it into the textarea below</li>
+                <li>Click "Debug HTML" to see the structure</li>
+            </ol>
+        </div>
+
+        <h3>Step 1: Paste Your Post HTML Here</h3>
+        <textarea id="htmlInput" style="width: 100%; height: 200px; border: 1px solid #ddd; padding: 10px;" placeholder="Paste the HTML from your post content here..."></textarea>
+
+        <button onclick="debugHTML()" style="margin: 10px 0; padding: 10px 20px; background: #4299e1; color: white; border: none; border-radius: 4px; cursor: pointer;">Debug HTML Structure</button>
+
+        <h3>Step 2: HTML Structure Analysis</h3>
+        <div id="debugOutput" class="debug-output">HTML structure will appear here...</div>
+
+        <h3>Step 3: How It Renders</h3>
+        <div id="renderedOutput" class="post-content" style="border: 1px solid #ddd; padding: 15px; margin: 10px 0;">Rendered content will appear here...</div>
+    </div>
+
+    <script>
+        function debugHTML() {
+            const input = document.getElementById('htmlInput').value;
+            const debugOutput = document.getElementById('debugOutput');
+            const renderedOutput = document.getElementById('renderedOutput');
+
+            if (!input.trim()) {
+                debugOutput.textContent = 'Please paste some HTML first.';
+                return;
+            }
+
+            // Analyze the HTML structure
+            const analysis = analyzeHTML(input);
+            debugOutput.textContent = analysis;
+
+            // Show how it renders
+            renderedOutput.innerHTML = input;
+        }
+
+        function analyzeHTML(html) {
+            let analysis = '=== HTML Structure Analysis ===\n\n';
+
+            // Count list elements
+            const ulCount = (html.match(/<ul/gi) || []).length;
+            const olCount = (html.match(/<ol/gi) || []).length;
+            const liCount = (html.match(/<li/gi) || []).length;
+
+            analysis += `List Elements Found:\n`;
+            analysis += `- <ul> elements: ${ulCount}\n`;
+            analysis += `- <ol> elements: ${olCount}\n`;
+            analysis += `- <li> elements: ${liCount}\n\n`;
+
+            // Check for nested structure
+            const hasNestedUL = html.includes('<ul><ul>') || html.includes('<li><ul>');
+            const hasNestedOL = html.includes('<ol><ol>') || html.includes('<li><ol>');
+
+            analysis += `Nested Structure:\n`;
+            analysis += `- Has nested UL: ${hasNestedUL ? 'YES ✓' : 'NO ✗'}\n`;
+            analysis += `- Has nested OL: ${hasNestedOL ? 'YES ✓' : 'NO ✗'}\n\n`;
+
+            // Check for common TinyMCE patterns
+            if (html.includes('data-indent') || html.includes('style="margin-left')) {
+                analysis += `⚠️  WARNING: Found inline styles (TinyMCE using CSS instead of proper HTML nesting)\n`;
+            }
+
+            if (html.includes('&nbsp;') && !hasNestedUL) {
+                analysis += `⚠️  WARNING: Found &nbsp; characters (possible indentation using spaces instead of proper lists)\n`;
+            }
+
+            if (ulCount > 0 && !hasNestedUL) {
+                analysis += `⚠️  WARNING: Found <ul> but no nesting - lists may be flat\n`;
+            }
+
+            analysis += `\n=== Raw HTML (formatted) ===\n`;
+            analysis += formatHTML(html);
+
+            return analysis;
+        }
+
+        function formatHTML(html) {
+            // Basic HTML formatting for readability
+            return html
+                .replace(/></g, '>\n<')
+                .replace(/^\s*\n/gm, '')
+                .split('\n')
+                .map(line => {
+                    const depth = (line.match(/^\s*<\//) ? -1 : 0) +
+                                 (line.match(/<[^\/][^>]*[^\/]>/) ? 1 : 0);
+                    return '  '.repeat(Math.max(0, depth)) + line.trim();
+                })
+                .join('\n');
+        }
+    </script>
+</body>
+</html>
