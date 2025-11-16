@@ -10,10 +10,9 @@
  * Version: 2.4.6 (Enhanced with debugging)
  */
 
-require_once 'includes/auth_check.php';
-require_once 'includes/db_connect.php';
-require_once 'includes/user_helpers.php';
-require_once 'includes/training_helpers.php';
+require_once __DIR__ . '/admin_init.php';
+$includesDir = admin_include_base();
+require_admin_include('training_helpers.php');
 
 // Only allow admin users
 if (!is_admin()) {
@@ -468,7 +467,7 @@ if ($training_tables_exist) {
     }
 }
 
-include 'includes/header.php';
+include $includesDir . '/header.php';
 ?>
 
 <div class="container">
@@ -742,4 +741,4 @@ window.onclick = function(event) {
 
 </script>
 
-<?php include 'includes/footer.php'; ?>
+<?php include $includesDir . '/footer.php'; ?>

@@ -4,13 +4,10 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Require authentication and admin check
-require_once 'includes/auth_check.php';
-
-// Load database and helpers
-require_once 'includes/db_connect.php';
-require_once 'includes/training_helpers.php';
-require_once 'includes/user_helpers.php';
+// Require authentication and load helpers
+require_once __DIR__ . '/admin_init.php';
+$includesDir = admin_include_base();
+require_admin_include('training_helpers.php');
 
 // Check if user is admin
 if (!is_admin()) {
@@ -530,6 +527,6 @@ if ($training_tables_exist && $course) {
         <?php endif; ?>
     </div>
 
-    <?php include 'includes/footer.php'; ?>
+<?php include $includesDir . '/footer.php'; ?>
 </body>
 </html>

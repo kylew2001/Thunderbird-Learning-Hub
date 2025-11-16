@@ -4,7 +4,7 @@
  * Displays all PHP files in the directory as clickable links
  */
 
-require_once 'includes/auth_check.php';
+require_once __DIR__ . '/admin_init.php';
 
 // Only allow admin users
 if (!isset($_SESSION['user_id']) || $_SESSION['user_id'] != 1) {
