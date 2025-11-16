@@ -103,25 +103,30 @@ function collect_php_files(string $root, int $maxDepth, array $ignoreNames): arr
     $files = [];
     $ignoreSet = array_flip($ignoreNames);
 
-    $filtered = new RecursiveCallbackFilterIterator(
-        new RecursiveDirectoryIterator($root, FilesystemIterator::SKIP_DOTS | FilesystemIterator::FOLLOW_SYMLINKS),
-        function ($current) use ($ignoreSet) {
-            $name = $current->getFilename();
-            if (isset($ignoreSet[$name])) {
-                return false;
-            }
+    $iterator = new RecursiveIteratorIterator(
+        new RecursiveCallbackFilterIterator(
+            new RecursiveDirectoryIterator($root, FilesystemIterator::SKIP_DOTS | FilesystemIterator::FOLLOW_SYMLINKS),
+            function ($current, $key, $iterator) use ($ignoreSet, $maxDepth) {
+                $depth = $iterator->getDepth();
+                if ($depth >= $maxDepth) {
+                    return false;
+                }
 
-            // Skip hidden directories/files unless explicitly allowed via ignore list removal
-            if ($name !== '.' && $name !== '..' && $name[0] === '.') {
-                return false;
-            }
+                $name = $current->getFilename();
+                if (isset($ignoreSet[$name])) {
+                    return false;
+                }
 
-            return true;
-        }
+                // Skip hidden directories/files unless explicitly allowed via ignore list removal
+                if ($name !== '.' && $name !== '..' && $name[0] === '.') {
+                    return false;
+                }
+
+                return true;
+            }
+        ),
+        RecursiveIteratorIterator::SELF_FIRST
     );
-
-    $iterator = new RecursiveIteratorIterator($filtered, RecursiveIteratorIterator::SELF_FIRST);
-    $iterator->setMaxDepth($maxDepth - 1);
 
     foreach ($iterator as $fileInfo) {
         /** @var SplFileInfo $fileInfo */
