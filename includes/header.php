@@ -1,11 +1,20 @@
+<?php
+if (!defined('APP_ROOT')) {
+    require_once __DIR__ . '/../system/config.php';
+}
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+require_once APP_INCLUDES . '/file_usage_logger.php';
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <?php
-    // Log which script is being executed (for unused file detection)
-    require_once __DIR__ . '/file_usage_logger.php';
 
 $host = $_SERVER['HTTP_HOST'] ?? '';
 $is_dev = stripos($host, 'devknowledgebase.xo.je') === 0;
@@ -49,19 +58,11 @@ elseif ($is_prod): ?>
             <h1><?php echo SITE_NAME; ?></h1>
             <?php if (isset($_SESSION['authenticated']) && $_SESSION['authenticated'] === true): ?>
                 <?php
-                require_once 'user_helpers.php';
-                require_once 'db_connect.php';
+                require_once APP_INCLUDES . '/user_helpers.php';
+                require_once APP_INCLUDES . '/db_connect.php';
 
-                // Load training helpers robustly (header.php lives in /includes)
-                $HERE = __DIR__;
-                $ROOT = realpath($HERE . '/..');
-
-                if (file_exists($HERE . '/training_helpers.php')) {
-                    require_once $HERE . '/training_helpers.php';
-                } elseif (file_exists($ROOT . '/includes/training_helpers.php')) {
-                    require_once $ROOT . '/includes/training_helpers.php';
-                } elseif (file_exists($ROOT . '/training_helpers.php')) {
-                    require_once $ROOT . '/training_helpers.php';
+                if (file_exists(APP_INCLUDES . '/training_helpers.php')) {
+                    require_once APP_INCLUDES . '/training_helpers.php';
                 }
 
                 // Fallback function in case training_helpers.php doesn't exist
@@ -123,7 +124,7 @@ elseif ($is_prod): ?>
                 <div class="user-info" style="display: flex; align-items: center; gap: 12px;">
                     <!-- Admin Notifications -->
                     <?php if (is_admin() && $pending_edit_requests > 0): ?>
-                    <a href="manage_edit_requests.php" style="display: flex; align-items: center; gap: 4px; background: #ffc107; color: #212529; padding: 4px 8px; border-radius: 12px; text-decoration: none; font-size: 11px; font-weight: 500;" title="Pending Edit Requests">
+                    <a href="/admin/manage_edit_requests.php" style="display: flex; align-items: center; gap: 4px; background: #ffc107; color: #212529; padding: 4px 8px; border-radius: 12px; text-decoration: none; font-size: 11px; font-weight: 500;" title="Pending Edit Requests">
                         <span>📝</span>
                         <span><?php echo $pending_edit_requests; ?></span>
                     </a>
@@ -131,14 +132,14 @@ elseif ($is_prod): ?>
                     
                     <!-- NEW: Unassigned Quizzes -->
 <?php if (is_admin() && $unassigned_quizzes > 0): ?>
-<a href="manage_quizzes.php?filter=unassigned" style="display: flex; align-items: center; gap: 4px; background: #6f42c1; color: white; padding: 4px 8px; border-radius: 12px; text-decoration: none; font-size: 11px; font-weight: 500;" title="Unassigned Quizzes">
+<a href="/admin/manage_quizzes.php?filter=unassigned" style="display: flex; align-items: center; gap: 4px; background: #6f42c1; color: white; padding: 4px 8px; border-radius: 12px; text-decoration: none; font-size: 11px; font-weight: 500;" title="Unassigned Quizzes">
     <span>❗</span>
     <span><?php echo $unassigned_quizzes; ?></span>
 </a>
 <?php endif; ?>
 
                     <?php if (is_super_admin() && $unresolved_bugs > 0): ?>
-                    <a href="bug_report.php" style="display: flex; align-items: center; gap: 4px; background: #dc3545; color: white; padding: 4px 8px; border-radius: 12px; text-decoration: none; font-size: 11px; font-weight: 500;" title="Unresolved Bugs">
+                    <a href="/bugs/bug_report.php" style="display: flex; align-items: center; gap: 4px; background: #dc3545; color: white; padding: 4px 8px; border-radius: 12px; text-decoration: none; font-size: 11px; font-weight: 500;" title="Unresolved Bugs">
                         <span>🐛</span>
                         <span><?php echo $unresolved_bugs; ?></span>
                     </a>
@@ -170,8 +171,8 @@ elseif ($is_prod): ?>
     // Allow pages to suppress the header's progress bar by setting $HIDE_HEADER_TRAINING_BAR = true before including header.php
     $hideBar = isset($HIDE_HEADER_TRAINING_BAR) && $HIDE_HEADER_TRAINING_BAR === true;
 ?>
-<?php if (!$hideBar && should_show_training_progress($pdo, $_SESSION['user_id'])): ?>
-                        <div class="training-progress-header" onclick="window.location='training_dashboard.php'">
+                    <?php if (!$hideBar && should_show_training_progress($pdo, $_SESSION['user_id'])): ?>
+                        <div class="training-progress-header" onclick="window.location='/training/training_dashboard.php'">
                             <div class="progress-info" id="training-progress-info">
                                 <span class="progress-icon">🎓</span>
                                 <span class="progress-text">Training: <span id="progress-percentage">0</span>%</span>
@@ -241,7 +242,7 @@ elseif ($is_prod): ?>
                         </script>
                     <?php endif; ?>
 
-                    <a href="logout.php" class="logout-btn">Logout</a>
+                    <a href="/logout.php" class="logout-btn">Logout</a>
                 </div>
             <?php endif; ?>
         </div>
@@ -251,7 +252,7 @@ elseif ($is_prod): ?>
   // Include admin menu dropdown logic
   if (is_admin()):
 
-    // Get all PHP files in current directory
+    // Get all PHP files relative to APP_ROOT for reliable linking
     function getPhpFilesDropdown($dir) {
         $files = [];
         $excludeFiles = [
@@ -261,18 +262,24 @@ elseif ($is_prod): ?>
             'includes/db_connect.php'
         ];
 
-        if ($handle = opendir($dir)) {
+        $baseDir = rtrim(app_path($dir), '/');
+        if (!is_dir($baseDir)) {
+            return [];
+        }
+
+        if ($handle = opendir($baseDir)) {
             while (false !== ($entry = readdir($handle))) {
                 if ($entry != "." && $entry != ".." &&
                     pathinfo($entry, PATHINFO_EXTENSION) === 'php' &&
                     !in_array($entry, $excludeFiles) &&
                     !str_starts_with($entry, '.')) {
 
-                    $filePath = $dir . '/' . $entry;
+                    $filePath = $baseDir . '/' . $entry;
                     if (is_file($filePath)) {
+                        $relativePath = ltrim(str_replace(APP_ROOT, '', realpath($filePath)), '/');
                         $files[] = [
                             'name' => $entry,
-                            'path' => $entry,
+                            'path' => '/' . $relativePath,
                             'type' => getFileTypeDropdown($entry)
                         ];
                     }
@@ -322,12 +329,12 @@ elseif ($is_prod): ?>
 
     $mainFiles = getPhpFilesDropdown('.');
     $dbFiles = [];
-    if (is_dir('database')) {
+    if (is_dir(app_path('database'))) {
         $dbFiles = getPhpFilesDropdown('database');
     }
 
     $htmlFiles = [];
-    if ($handle = opendir('.')) {
+    if ($handle = opendir(APP_ROOT)) {
         while (false !== ($entry = readdir($handle))) {
             if ($entry != "." && $entry != ".." &&
                 pathinfo($entry, PATHINFO_EXTENSION) === 'html' &&
@@ -335,7 +342,7 @@ elseif ($is_prod): ?>
 
                 $htmlFiles[] = [
                     'name' => $entry,
-                    'path' => $entry,
+                    'path' => '/' . ltrim($entry, '/'),
                     'type' => '🌐'
                 ];
             }
@@ -363,27 +370,27 @@ elseif ($is_prod): ?>
       <div class="dev-dropdown-section">
         <div class="dev-section-title">🛠️ Admin Tools</div>
         <div class="dev-file-list">
-          <a href="manage_users.php" class="dev-file-item">
+          <a href="/admin/manage_users.php" class="dev-file-item">
             <span class="dev-file-icon">👥</span>
             <span class="dev-file-name">User Management</span>
           </a>
-          <a href="manage_training_courses.php" class="dev-file-item">
+          <a href="/admin/manage_training_courses.php" class="dev-file-item">
             <span class="dev-file-icon">🎓</span>
             <span class="dev-file-name">Training Courses</span>
           </a>
-          <a href="manage_quizzes.php" class="dev-file-item">
+          <a href="/admin/manage_quizzes.php" class="dev-file-item">
             <span class="dev-file-icon">📝</span>
             <span class="dev-file-name">Manage Quizzes</span>
           </a>
-          <a href="training_admin_analytics.php" class="dev-file-item">
+          <a href="/admin/training_admin_analytics.php" class="dev-file-item">
             <span class="dev-file-icon">📊</span>
             <span class="dev-file-name">Admin Training Dashboard</span>
           </a>
-          <a href="manage_edit_requests.php" class="dev-file-item">
+          <a href="/admin/manage_edit_requests.php" class="dev-file-item">
             <span class="dev-file-icon">📝</span>
             <span class="dev-file-name">Edit Requests</span>
           </a>
-          <a href="bug_report.php" class="dev-file-item">
+          <a href="/bugs/bug_report.php" class="dev-file-item">
             <span class="dev-file-icon">🐛</span>
             <span class="dev-file-name">Bug Report System</span>
           </a>

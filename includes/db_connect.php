@@ -1,5 +1,7 @@
 <?php
-require_once __DIR__ . '/../config.php';
+if (!defined('APP_ROOT')) {
+    require_once __DIR__ . '/../system/config.php';
+}
 
 // Set timezone to New Zealand
 date_default_timezone_set('Pacific/Auckland');

@@ -1,17 +1,20 @@
 <?php
+if (!defined('APP_ROOT')) {
+    require_once __DIR__ . '/../system/config.php';
+}
 /**
  * Reusable Search Widget
  * Usage: require_once __DIR__ . '/includes/search_widget.php'; render_search_bar();
- * Optional: render_search_bar($actionPath = 'search_working.php')
+ * Optional: render_search_bar($actionPath = '/search/search_working.php')
  */
 
 if (!function_exists('render_search_bar')) {
-    function render_search_bar($actionPath = 'search_working.php') {
+    function render_search_bar($actionPath = '/search/search_working.php') {
         // Guard to only print JS/CSS once per request
         static $SVS_SEARCH_WIDGET_LOADED = false;
 
         // HTML (IDs are fixed so keyboard navigation works everywhere)
-        echo <<<'HTML'
+        $formHtml = <<<'HTML'
 <div class="card" style="margin-bottom: 20px; position: relative;">
     <form id="searchForm" method="GET" action="HTML_ACTION_PATH" style="display: flex; gap: 10px;">
         <input
@@ -34,7 +37,8 @@ if (!function_exists('render_search_bar')) {
 HTML;
 
         // Swap in the desired action path (kept simple and safe)
-        echo str_replace('HTML_ACTION_PATH', htmlspecialchars($actionPath, ENT_QUOTES, 'UTF-8'), '');
+        $formHtml = str_replace('HTML_ACTION_PATH', htmlspecialchars($actionPath, ENT_QUOTES, 'UTF-8'), $formHtml);
+        echo $formHtml;
 
         // JS/CSS only once
         if ($SVS_SEARCH_WIDGET_LOADED) {
@@ -131,7 +135,7 @@ function updateSelectedAutocompleteItem(items, selectedIndex) {
 }
 
 function performAutocompleteSearch(query) {
-    fetch('search_autocomplete.php?q=' + encodeURIComponent(query))
+    fetch('/search/search_autocomplete.php?q=' + encodeURIComponent(query))
         .then(response => response.json())
         .then(data => {
             currentAutocompleteResults = (data && Array.isArray(data.results)) ? data.results : [];

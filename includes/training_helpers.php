@@ -9,60 +9,19 @@
  * including role checking, progress tracking, and course management.
  */
 
+if (!defined('APP_ROOT')) {
+    require_once __DIR__ . '/../system/config.php';
+}
 
-/**
- * Training System Helper Functions
- * Created: 2025-11-05
- * Updated: 2025-11-06 22:02:00 UTC - Enhanced assignment debugging and content count
- * Author: Claude Code Assistant
- *
- * This file contains all the core functions for the training system
- * including role checking, progress tracking, and course management.
- */
-
-// --- BEGIN REPLACEMENT ---
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-$HERE = __DIR__;
-$ROOT = realpath($HERE . '/..');
+require_once APP_INCLUDES . '/user_helpers.php';
 
-// Load user helpers robustly (works when included or hit via AJAX)
-if (file_exists($HERE . '/user_helpers.php')) {
-    require_once $HERE . '/user_helpers.php';
-} elseif (file_exists($ROOT . '/includes/user_helpers.php')) {
-    require_once $ROOT . '/includes/user_helpers.php';
-} elseif (file_exists($ROOT . '/user_helpers.php')) {
-    require_once $ROOT . '/user_helpers.php';
-} else {
-    // If an AJAX call hits this file directly and user_helpers is missing, return JSON error
-    if (!headers_sent()) {
-        header('Content-Type: application/json');
-    }
-    http_response_code(500);
-    echo json_encode(['success' => false, 'message' => 'user_helpers.php not found']);
-    exit;
-}
-
-// Ensure there is a PDO connection when called directly via fetch()
 if (!isset($pdo) || !$pdo) {
-    if (file_exists($HERE . '/db_connect.php')) {
-        require_once $HERE . '/db_connect.php';
-    } elseif (file_exists($ROOT . '/includes/db_connect.php')) {
-        require_once $ROOT . '/includes/db_connect.php';
-    } elseif (file_exists($ROOT . '/db_connect.php')) {
-        require_once $ROOT . '/db_connect.php';
-    } else {
-        if (!headers_sent()) {
-            header('Content-Type: application/json');
-        }
-        http_response_code(500);
-        echo json_encode(['success' => false, 'message' => 'db_connect.php not found']);
-        exit;
-    }
+    require_once APP_INCLUDES . '/db_connect.php';
 }
-// --- END REPLACEMENT ---
 
 
 // ============================================================
