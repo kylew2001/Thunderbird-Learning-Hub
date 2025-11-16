@@ -4,6 +4,10 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+// Require authentication and load helpers
+require_once __DIR__ . '/admin_init.php';
+$includesDir = admin_include_base();
+require_admin_include('training_helpers.php');
 // Require authentication and admin check
 require_once __DIR__ . '/../includes/auth_check.php';
 
@@ -506,7 +510,7 @@ if ($training_tables_exist) {
 
 // Page title for shared header
 $page_title = 'Manage Course Content';
-require_once __DIR__ . '/includes/header.php';
+require_once $includesDir . '/header.php';
 ?>
 <style>
 /* Scope all page-specific styles to avoid fighting global theme classes */
@@ -1110,4 +1114,5 @@ document.getElementById('addContentForm').addEventListener('submit', function(e)
 });
 </script>
 
+<?php include $includesDir . '/footer.php'; ?>
 <?php require_app_file('footer.php'); ?>

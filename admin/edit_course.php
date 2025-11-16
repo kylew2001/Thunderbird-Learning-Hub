@@ -4,6 +4,10 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+// Require authentication and load helpers
+require_once __DIR__ . '/admin_init.php';
+$includesDir = admin_include_base();
+require_admin_include('training_helpers.php');
 // Require authentication and admin check
 require_once __DIR__ . '/../includes/auth_check.php';
 
@@ -537,6 +541,7 @@ if ($training_tables_exist && $course) {
         <?php endif; ?>
     </div>
 
+<?php include $includesDir . '/footer.php'; ?>
     <?php require_app_file('footer.php'); ?>
 </body>
 </html>

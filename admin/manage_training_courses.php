@@ -10,6 +10,9 @@
  * Version: 2.4.6 (Enhanced with debugging)
  */
 
+require_once __DIR__ . '/admin_init.php';
+$includesDir = admin_include_base();
+require_admin_include('training_helpers.php');
 require_once __DIR__ . '/../includes/auth_check.php';
 require_once __DIR__ . '/../includes/db_connect.php';
 require_once __DIR__ . '/../includes/user_helpers.php';
@@ -473,6 +476,7 @@ if ($training_tables_exist) {
     }
 }
 
+include $includesDir . '/header.php';
 require_app_file('header.php');
 ?>
 
@@ -747,4 +751,5 @@ window.onclick = function(event) {
 
 </script>
 
+<?php include $includesDir . '/footer.php'; ?>
 <?php require_app_file('footer.php'); ?>
