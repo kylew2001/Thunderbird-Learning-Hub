@@ -1,7 +1,6 @@
+<?php
 // system/config.php
 require_once __DIR__ . '/bootstrap.php';
-
-<?php
 /**
  * Application Configuration
  * Contains database settings, users, and global constants
@@ -81,4 +80,3 @@ $GLOBALS['VISIBILITY_OPTIONS_ALL'] = [
 
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
-?>
