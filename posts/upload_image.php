@@ -4,7 +4,7 @@
  * Handles image uploads from TinyMCE editor
  */
 
-require_once 'includes/auth_check.php';
+require_once __DIR__ . '/../includes/auth_check.php';
 
 // Set JSON response header
 header('Content-Type: application/json');

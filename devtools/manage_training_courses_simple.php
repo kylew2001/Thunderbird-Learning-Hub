@@ -5,7 +5,7 @@ echo "Basic page loaded successfully!<br>";
 if (file_exists('includes/auth_check.php')) {
     echo "auth_check.php exists<br>";
     try {
-        require_once 'includes/auth_check.php';
+        require_once __DIR__ . '/../includes/auth_check.php';
         echo "auth_check.php loaded successfully<br>";
     } catch (Exception $e) {
         echo "Error loading auth_check.php: " . $e->getMessage() . "<br>";
@@ -16,7 +16,7 @@ if (file_exists('includes/auth_check.php')) {
 
 // Test database connection
 try {
-    require_once 'includes/db_connect.php';
+    require_once __DIR__ . '/../includes/db_connect.php';
     echo "db_connect.php loaded successfully<br>";
     if (isset($pdo)) {
         echo "Database connection established<br>";

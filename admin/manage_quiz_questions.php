@@ -10,6 +10,13 @@
 
 require_once __DIR__ . '/admin_init.php';
 $includesDir = admin_include_base();
+require_once __DIR__ . '/../includes/auth_check.php';
+require_once __DIR__ . '/../includes/db_connect.php';
+require_once __DIR__ . '/../includes/user_helpers.php';
+require_once dirname(__DIR__) . '/includes/include_path.php';
+require_app_file('auth_check.php');
+require_app_file('db_connect.php');
+require_app_file('user_helpers.php');
 
 // Only allow admin users
 if (!is_admin()) {
@@ -453,6 +460,7 @@ try {
     $error_message = 'Error loading questions: ' . $e->getMessage();
 }
 include $includesDir . '/header.php';
+require_app_file('header.php');
 ?>
 
 <style>
@@ -1177,3 +1185,4 @@ window.onclick = function(event) {
 </script>
 
 <?php include $includesDir . '/footer.php'; ?>
+<?php require_app_file('footer.php'); ?>
