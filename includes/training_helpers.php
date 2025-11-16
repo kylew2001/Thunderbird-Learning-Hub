@@ -301,14 +301,6 @@ if (isset($_GET['action']) && $_GET['action'] === 'mark_complete') {
 // ============================================================
 
 /**
- * Check if current user is in training role
- * @return bool True if user is training role
- */
-function is_training_user() {
-    return isset($_SESSION['user_role']) && strtolower($_SESSION['user_role']) === 'training';
-}
-
-/**
  * Check if current user can create posts
  * @return bool True if user can create posts
  */
