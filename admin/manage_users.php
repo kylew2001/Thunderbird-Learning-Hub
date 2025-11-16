@@ -20,6 +20,9 @@
  * - User: Can only edit own profile
  */
 
+require_once __DIR__ . '/../includes/auth_check.php';
+require_once __DIR__ . '/../includes/db_connect.php';
+require_once __DIR__ . '/../includes/user_helpers.php';
 require_once dirname(__DIR__) . '/includes/include_path.php';
 require_app_file('auth_check.php');
 require_app_file('db_connect.php');

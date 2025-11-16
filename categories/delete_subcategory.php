@@ -5,6 +5,8 @@
  * CASCADE delete will handle related records automatically
  */
 
+require_once __DIR__ . '/../includes/auth_check.php';
+require_once __DIR__ . '/../includes/db_connect.php';
 $config_path = dirname(__DIR__) . '/system/config.php';
 if (file_exists($config_path)) {
     require_once $config_path;

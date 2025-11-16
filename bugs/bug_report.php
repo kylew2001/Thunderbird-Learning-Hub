@@ -4,8 +4,8 @@
  * Accessible to all users with role-based permissions
  */
 
-require_once 'includes/auth_check.php';
-require_once 'includes/db_connect.php';
+require_once __DIR__ . '/../includes/auth_check.php';
+require_once __DIR__ . '/../includes/db_connect.php';
 
 $page_title = 'Bug Report System';
 

@@ -60,7 +60,7 @@ echo "<style>
 echo "<div class='main-container'>";
 
 // Load required files
-require_once 'includes/auth_check.php';
+require_once __DIR__ . '/../includes/auth_check.php';
 
 if (!isset($_SESSION['user_id'])) {
     echo "<div class='error'>❌ No user ID in session</div>";
@@ -86,7 +86,7 @@ if (!file_exists('includes/training_helpers.php')) {
         ];
     }
 } else {
-    require_once 'includes/training_helpers.php';
+    require_once __DIR__ . '/../includes/training_helpers.php';
 }
 
 // Check if user is training user
@@ -98,7 +98,7 @@ if (!function_exists('is_training_user') || !is_training_user()) {
 }
 
 // Database connection
-require_once 'includes/db_connect.php';
+require_once __DIR__ . '/../includes/db_connect.php';
 global $pdo;
 
 // Check training tables

@@ -5,6 +5,13 @@
  * Then drop your custom logic + markup into the container below.
  */
 
+require_once __DIR__ . '/../includes/auth_check.php';
+require_once __DIR__ . '/../includes/db_connect.php';
+require_once __DIR__ . '/../includes/user_helpers.php';
+
+// Load training helpers if available (keeps behavior consistent with index.php)
+if (file_exists('includes/training_helpers.php')) {
+    require_once __DIR__ . '/../includes/training_helpers.php';
 require_once dirname(__DIR__) . '/includes/include_path.php';
 require_app_file('auth_check.php');
 require_app_file('db_connect.php');
