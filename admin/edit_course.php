@@ -5,12 +5,14 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 // Require authentication and admin check
-require_once 'includes/auth_check.php';
+require_once __DIR__ . '/admin_bootstrap.php';
+
+require_admin_include('auth_check.php');
 
 // Load database and helpers
-require_once 'includes/db_connect.php';
-require_once 'includes/training_helpers.php';
-require_once 'includes/user_helpers.php';
+require_admin_include('db_connect.php');
+require_admin_include('training_helpers.php');
+require_admin_include('user_helpers.php');
 
 // Check if user is admin
 if (!is_admin()) {

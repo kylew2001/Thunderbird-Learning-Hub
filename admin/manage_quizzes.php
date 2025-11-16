@@ -8,9 +8,11 @@
  * Author: Claude Code Assistant
  */
 
-require_once 'includes/auth_check.php';
-require_once 'includes/db_connect.php';
-require_once 'includes/user_helpers.php';
+require_once __DIR__ . '/admin_bootstrap.php';
+
+require_admin_include('auth_check.php');
+require_admin_include('db_connect.php');
+require_admin_include('user_helpers.php');
 
 // Only allow admin users
 if (!is_admin()) {
