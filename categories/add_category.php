@@ -9,9 +9,11 @@
  * - Complete database-driven user system integration
  */
 
-require_once 'includes/auth_check.php';
-require_once 'includes/db_connect.php';
-require_once 'includes/user_helpers.php';
+// Resolve includes using absolute paths to prevent directory-related failures
+require_once __DIR__ . '/../system/config.php';
+require_once APP_INCLUDES . '/auth_check.php';
+require_once APP_INCLUDES . '/db_connect.php';
+require_once APP_INCLUDES . '/user_helpers.php';
 
 $page_title = 'Add Category';
 $error_message = '';
@@ -82,7 +84,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-include 'includes/header.php';
+include APP_INCLUDES . '/header.php';
 ?>
 
 <div class="container">
@@ -224,4 +226,4 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 <?php endif; ?>
 
-<?php include 'includes/footer.php'; ?>
+<?php include APP_INCLUDES . '/footer.php'; ?>
