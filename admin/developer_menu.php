@@ -4,6 +4,9 @@
  * Displays all PHP files in the directory as clickable links
  */
 
+require_once __DIR__ . '/admin_bootstrap.php';
+
+require_admin_include('auth_check.php');
 require_once __DIR__ . '/admin_init.php';
 require_once __DIR__ . '/../includes/auth_check.php';
 require_once dirname(__DIR__) . '/includes/include_path.php';

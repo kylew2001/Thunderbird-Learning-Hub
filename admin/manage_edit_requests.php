@@ -6,6 +6,11 @@
  * Created: 2025-11-03 (Edit Request Management)
  */
 
+require_once __DIR__ . '/admin_bootstrap.php';
+
+require_admin_include('auth_check.php');
+require_admin_include('db_connect.php');
+require_admin_include('user_helpers.php');
 require_once __DIR__ . '/admin_init.php';
 $includesDir = admin_include_base();
 require_once __DIR__ . '/../includes/auth_check.php';

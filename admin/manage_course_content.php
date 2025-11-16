@@ -9,6 +9,14 @@ require_once __DIR__ . '/admin_init.php';
 $includesDir = admin_include_base();
 require_admin_include('training_helpers.php');
 // Require authentication and admin check
+require_once __DIR__ . '/admin_bootstrap.php';
+
+require_admin_include('auth_check.php');
+
+// Load database and helpers
+require_admin_include('db_connect.php');
+require_admin_include('training_helpers.php');
+require_admin_include('user_helpers.php');
 require_once __DIR__ . '/../includes/auth_check.php';
 
 // Load database and helpers

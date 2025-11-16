@@ -5,6 +5,15 @@
  * Then drop your custom logic + markup into the container below.
  */
 
+require_once __DIR__ . '/admin_bootstrap.php';
+
+require_admin_include('auth_check.php');
+require_admin_include('db_connect.php');
+require_admin_include('user_helpers.php');
+
+// Load training helpers if available (keeps behavior consistent with index.php)
+if (file_exists('includes/training_helpers.php')) {
+    require_admin_include('training_helpers.php');
 // Robust include loader to tolerate different working directories
 $include_loader = function (string $relativePath) {
     $paths = [
