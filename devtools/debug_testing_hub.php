@@ -106,9 +106,17 @@ function collect_php_files(string $root, int $maxDepth, array $ignoreNames): arr
     $iterator = new RecursiveIteratorIterator(
         new RecursiveCallbackFilterIterator(
             new RecursiveDirectoryIterator($root, FilesystemIterator::SKIP_DOTS | FilesystemIterator::FOLLOW_SYMLINKS),
-            function ($current, $key, $iterator) use ($ignoreSet, $maxDepth) {
-                $inner = $iterator->getInnerIterator();
-                $subPath = method_exists($inner, 'getSubPath') ? $inner->getSubPath() : '';
+            function ($current, $key, $iterator) use ($ignoreSet, $maxDepth, $root) {
+                $subPath = '';
+
+                if (is_object($iterator) && method_exists($iterator, 'getSubPath')) {
+                    $subPath = $iterator->getSubPath();
+                } elseif ($current instanceof SplFileInfo) {
+                    $path = $current->getPathname();
+                    $relative = $root !== '' ? ltrim(substr($path, strlen(rtrim($root, DIRECTORY_SEPARATOR))), DIRECTORY_SEPARATOR) : $path;
+                    $subPath = $relative === false ? '' : $relative;
+                }
+
                 $depth = $subPath === '' ? 0 : substr_count($subPath, DIRECTORY_SEPARATOR) + 1;
 
                 if ($depth >= $maxDepth) {
@@ -121,7 +129,7 @@ function collect_php_files(string $root, int $maxDepth, array $ignoreNames): arr
                 }
 
                 // Skip hidden directories/files unless explicitly allowed via ignore list removal
-                if ($name !== '.' && $name !== '..' && $name[0] === '.') {
+                if ($name !== '.' && $name !== '..' && isset($name[0]) && $name[0] === '.') {
                     return false;
                 }
 
