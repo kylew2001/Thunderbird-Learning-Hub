@@ -107,7 +107,10 @@ function collect_php_files(string $root, int $maxDepth, array $ignoreNames): arr
         new RecursiveCallbackFilterIterator(
             new RecursiveDirectoryIterator($root, FilesystemIterator::SKIP_DOTS | FilesystemIterator::FOLLOW_SYMLINKS),
             function ($current, $key, $iterator) use ($ignoreSet, $maxDepth) {
-                $depth = $iterator->getDepth();
+                $inner = $iterator->getInnerIterator();
+                $subPath = method_exists($inner, 'getSubPath') ? $inner->getSubPath() : '';
+                $depth = $subPath === '' ? 0 : substr_count($subPath, DIRECTORY_SEPARATOR) + 1;
+
                 if ($depth >= $maxDepth) {
                     return false;
                 }
