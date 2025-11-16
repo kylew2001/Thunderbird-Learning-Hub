@@ -4,6 +4,28 @@
  * Accessible to all users with role-based permissions
  */
 
+$include_paths = [
+    __DIR__ . '/includes',
+    __DIR__ . '/../includes',
+    dirname(__DIR__) . '/includes',
+];
+
+$includes_dir = null;
+foreach ($include_paths as $path) {
+    if (file_exists($path . '/auth_check.php') && file_exists($path . '/db_connect.php')) {
+        $includes_dir = $path;
+        break;
+    }
+}
+
+if ($includes_dir === null) {
+    http_response_code(500);
+    echo json_encode(['success' => false, 'message' => 'Required include files missing']);
+    exit;
+}
+
+require_once $includes_dir . '/auth_check.php';
+require_once $includes_dir . '/db_connect.php';
 require_once __DIR__ . '/../includes/auth_check.php';
 require_once __DIR__ . '/../includes/db_connect.php';
 
@@ -97,7 +119,7 @@ try {
     error_log("Error fetching bug reports: " . $e->getMessage());
 }
 
-include 'includes/header.php';
+include $includes_dir . '/header.php';
 ?>
 
 <div class="container">
