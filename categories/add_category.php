@@ -9,6 +9,30 @@
  * - Complete database-driven user system integration
  */
 
+// Resolve includes using absolute paths to prevent directory-related failures
+$config_paths = [
+    __DIR__ . '/../system/config.php',
+    dirname(__DIR__) . '/system/config.php',
+    __DIR__ . '/../config.php',
+];
+
+$config_loaded = false;
+foreach ($config_paths as $config_path) {
+    if (file_exists($config_path)) {
+        require_once $config_path;
+        $config_loaded = true;
+        break;
+    }
+}
+
+if (!$config_loaded) {
+    http_response_code(500);
+    exit('Configuration file missing.');
+}
+
+require_once APP_INCLUDES . '/auth_check.php';
+require_once APP_INCLUDES . '/db_connect.php';
+require_once APP_INCLUDES . '/user_helpers.php';
 $includes_dir = dirname(__DIR__) . '/includes';
 if (!is_dir($includes_dir)) {
     $fallback_includes = [__DIR__ . '/includes', dirname(__DIR__, 2) . '/includes'];
@@ -98,6 +122,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
+include APP_INCLUDES . '/header.php';
 include $includes_dir . '/header.php';
 ?>
 
@@ -240,4 +265,5 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 <?php endif; ?>
 
+<?php include APP_INCLUDES . '/footer.php'; ?>
 <?php include $includes_dir . '/footer.php'; ?>
