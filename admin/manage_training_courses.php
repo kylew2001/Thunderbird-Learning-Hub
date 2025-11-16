@@ -16,6 +16,18 @@ require_admin_include('auth_check.php');
 require_admin_include('db_connect.php');
 require_admin_include('user_helpers.php');
 require_admin_include('training_helpers.php');
+require_once __DIR__ . '/admin_init.php';
+$includesDir = admin_include_base();
+require_admin_include('training_helpers.php');
+require_once __DIR__ . '/../includes/auth_check.php';
+require_once __DIR__ . '/../includes/db_connect.php';
+require_once __DIR__ . '/../includes/user_helpers.php';
+require_once __DIR__ . '/../includes/training_helpers.php';
+require_once dirname(__DIR__) . '/includes/include_path.php';
+require_app_file('auth_check.php');
+require_app_file('db_connect.php');
+require_app_file('user_helpers.php');
+require_app_file('training_helpers.php');
 
 // Only allow admin users
 if (!is_admin()) {
@@ -470,7 +482,8 @@ if ($training_tables_exist) {
     }
 }
 
-include 'includes/header.php';
+include $includesDir . '/header.php';
+require_app_file('header.php');
 ?>
 
 <div class="container">
@@ -744,4 +757,5 @@ window.onclick = function(event) {
 
 </script>
 
-<?php include 'includes/footer.php'; ?>
+<?php include $includesDir . '/footer.php'; ?>
+<?php require_app_file('footer.php'); ?>

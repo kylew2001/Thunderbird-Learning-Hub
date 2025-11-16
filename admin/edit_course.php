@@ -4,6 +4,10 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+// Require authentication and load helpers
+require_once __DIR__ . '/admin_init.php';
+$includesDir = admin_include_base();
+require_admin_include('training_helpers.php');
 // Require authentication and admin check
 require_once __DIR__ . '/admin_bootstrap.php';
 
@@ -13,6 +17,19 @@ require_admin_include('auth_check.php');
 require_admin_include('db_connect.php');
 require_admin_include('training_helpers.php');
 require_admin_include('user_helpers.php');
+require_once __DIR__ . '/../includes/auth_check.php';
+
+// Load database and helpers
+require_once __DIR__ . '/../includes/db_connect.php';
+require_once __DIR__ . '/../includes/training_helpers.php';
+require_once __DIR__ . '/../includes/user_helpers.php';
+require_once dirname(__DIR__) . '/includes/include_path.php';
+require_app_file('auth_check.php');
+
+// Load database and helpers
+require_app_file('db_connect.php');
+require_app_file('training_helpers.php');
+require_app_file('user_helpers.php');
 
 // Check if user is admin
 if (!is_admin()) {
@@ -532,6 +549,7 @@ if ($training_tables_exist && $course) {
         <?php endif; ?>
     </div>
 
-    <?php include 'includes/footer.php'; ?>
+<?php include $includesDir . '/footer.php'; ?>
+    <?php require_app_file('footer.php'); ?>
 </body>
 </html>
