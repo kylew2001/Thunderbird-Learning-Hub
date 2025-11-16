@@ -9,9 +9,30 @@
  * - Complete database-driven user system integration
  */
 
-require_once 'includes/auth_check.php';
-require_once 'includes/db_connect.php';
-require_once 'includes/user_helpers.php';
+// Resolve includes using absolute paths to prevent directory-related failures
+$config_paths = [
+    __DIR__ . '/../system/config.php',
+    dirname(__DIR__) . '/system/config.php',
+    __DIR__ . '/../config.php',
+];
+
+$config_loaded = false;
+foreach ($config_paths as $config_path) {
+    if (file_exists($config_path)) {
+        require_once $config_path;
+        $config_loaded = true;
+        break;
+    }
+}
+
+if (!$config_loaded) {
+    http_response_code(500);
+    exit('Configuration file missing.');
+}
+
+require_once APP_INCLUDES . '/auth_check.php';
+require_once APP_INCLUDES . '/db_connect.php';
+require_once APP_INCLUDES . '/user_helpers.php';
 
 $page_title = 'Add Category';
 $error_message = '';
@@ -82,7 +103,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-include 'includes/header.php';
+include APP_INCLUDES . '/header.php';
 ?>
 
 <div class="container">
@@ -224,4 +245,4 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 <?php endif; ?>
 
-<?php include 'includes/footer.php'; ?>
+<?php include APP_INCLUDES . '/footer.php'; ?>
