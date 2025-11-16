@@ -1,4 +1,11 @@
 <?php
+if (!defined('APP_ROOT')) {
+    require_once __DIR__ . '/../system/config.php';
+}
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 /**
  * User Helper Functions
  * Functions for user management and role checking
@@ -26,7 +33,7 @@ function is_admin() {
     // Fallback to checking database directly if user_id is set
     if (isset($_SESSION['user_id'])) {
         try {
-            require_once 'db_connect.php';
+            require_once APP_INCLUDES . '/db_connect.php';
             $stmt = $pdo->prepare("SELECT role FROM users WHERE id = ? AND is_active = 1");
             $stmt->execute([$_SESSION['user_id']]);
             $user = $stmt->fetch();
@@ -55,7 +62,7 @@ function is_super_admin() {
     // Fallback to checking database directly
     if (isset($_SESSION['user_id'])) {
         try {
-            require_once 'db_connect.php';
+            require_once APP_INCLUDES . '/db_connect.php';
             $stmt = $pdo->prepare("SELECT role FROM users WHERE id = ? AND is_active = 1");
             $stmt->execute([$_SESSION['user_id']]);
             $user = $stmt->fetch();
@@ -83,7 +90,7 @@ if (!function_exists('is_training_user')) {
 
         if (isset($_SESSION['user_id'])) {
             try {
-                require_once 'db_connect.php';
+                require_once APP_INCLUDES . '/db_connect.php';
                 $stmt = $pdo->prepare("SELECT role FROM users WHERE id = ? AND is_active = 1");
                 $stmt->execute([$_SESSION['user_id']]);
                 $user = $stmt->fetch();

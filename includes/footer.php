@@ -1,3 +1,12 @@
+<?php
+if (!defined('APP_ROOT')) {
+    require_once __DIR__ . '/../system/config.php';
+}
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+?>
 <!-- Standard footer content -->
     <div class="footer-inner" style="text-align: center; padding: 10px 0;">
         <p style="margin: 0;">
@@ -9,7 +18,7 @@
 
         <?php if (isset($_SESSION['authenticated']) && $_SESSION['authenticated'] === true): ?>
             <div style="margin-top: 10px;">
-                <a href="bug_report.php" class="btn btn-primary btn-small" style="font-size: 12px; padding: 8px 16px;">
+                <a href="/bugs/bug_report.php" class="btn btn-primary btn-small" style="font-size: 12px; padding: 8px 16px;">
                     🐛 Report a Bug
                 </a>
             </div>

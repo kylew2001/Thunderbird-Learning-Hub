@@ -5,14 +5,15 @@
  * Last updated: 2025-11-03 (Subcategory visibility controls added)
  */
 
-require_once 'includes/auth_check.php';
-require_once 'includes/db_connect.php';
-require_once 'includes/user_helpers.php';
-require_once __DIR__ . '/includes/search_widget.php';
+require_once __DIR__ . '/system/config.php';
+require_once APP_INCLUDES . '/auth_check.php';
+require_once APP_INCLUDES . '/db_connect.php';
+require_once APP_INCLUDES . '/user_helpers.php';
+require_once APP_INCLUDES . '/search_widget.php';
 
 // Load training helpers if available
-if (file_exists('includes/training_helpers.php')) {
-    require_once 'includes/training_helpers.php';
+if (file_exists(APP_INCLUDES . '/training_helpers.php')) {
+    require_once APP_INCLUDES . '/training_helpers.php';
 }
 
 // Fallback functions for training permissions
@@ -389,20 +390,20 @@ if ($is_training) {
     $categories = [];
 }
 
-include 'includes/header.php';
+include APP_INCLUDES . '/header.php';
 ?>
 
 <div class="container">
     <?php
         // One-liner search bar (same behavior everywhere).
         // Uses search_autocomplete.php and submits to search_working.php
-        render_search_bar('search_working.php');
+        render_search_bar('/search/search_working.php');
     ?>
 
     <div class="flex-between mb-20">
         <h2 style="font-size: 24px; color: #2d3748;">Knowledge Categories</h2>
         <?php if (can_create_categories()): ?>
-            <a href="add_category.php" class="btn btn-success">+ Add Category</a>
+            <a href="/categories/add_category.php" class="btn btn-success">+ Add Category</a>
         <?php endif; ?>
     </div>
 
@@ -501,14 +502,14 @@ include 'includes/header.php';
     <?php endif; ?>
 
     <?php if (can_create_subcategories()): ?>
-        <a href="add_subcategory.php?category_id=<?php echo $category['id']; ?>" class="btn btn-primary btn-small">+ Add Subcategory</a>
+        <a href="/categories/add_subcategory.php?category_id=<?php echo $category['id']; ?>" class="btn btn-primary btn-small">+ Add Subcategory</a>
     <?php endif; ?>
 
     <?php if ($is_super_user || is_admin()): ?>
-        <a href="edit_category.php?id=<?php echo $category['id']; ?>" class="btn btn-warning btn-small">Edit</a>
-        <a href="delete_category.php?id=<?php echo $category['id']; ?>" class="btn btn-danger btn-small" onclick="return confirm('Are you sure? This will delete the category and ALL subcategories, posts, and replies under it. This cannot be undone.');">Delete</a>
+        <a href="/categories/edit_category.php?id=<?php echo $category['id']; ?>" class="btn btn-warning btn-small">Edit</a>
+        <a href="/categories/delete_category.php?id=<?php echo $category['id']; ?>" class="btn btn-danger btn-small" onclick="return confirm('Are you sure? This will delete the category and ALL subcategories, posts, and replies under it. This cannot be undone.');">Delete</a>
     <?php elseif (!$is_training): ?>
-        <a href="request_edit_category.php?id=<?php echo $category['id']; ?>" class="btn btn-warning btn-small">Request Edit</a>
+        <a href="/categories/request_edit_category.php?id=<?php echo $category['id']; ?>" class="btn btn-warning btn-small">Request Edit</a>
     <?php endif; ?>
 </div>
                     </div>
@@ -525,7 +526,7 @@ include 'includes/header.php';
                         <div class="subcategory-list">
                             <?php foreach ($category['subcategories'] as $subcategory): ?>
                                 <div class="subcategory-item">
-                                    <a href="subcategory.php?id=<?php echo $subcategory['id']; ?>" class="subcategory-name">
+                                    <a href="/categories/subcategory.php?id=<?php echo $subcategory['id']; ?>" class="subcategory-name">
                                         <?php echo htmlspecialchars($subcategory['name']); ?>
                                         <?php if (($is_super_user || is_admin()) && $subcategory_visibility_columns_exist): ?>
                                             <?php
@@ -572,7 +573,7 @@ function togglePinCategory(categoryId, buttonElement) {
     buttonElement.textContent = '⏳ Loading...';
     buttonElement.disabled = true;
 
-    fetch('toggle_pin_category.php', {
+    fetch('/categories/toggle_pin_category.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: 'category_id=' + encodeURIComponent(categoryId) + '&action=' + encodeURIComponent(action)
@@ -596,4 +597,4 @@ function togglePinCategory(categoryId, buttonElement) {
 }
 </script>
 
-<?php include 'includes/footer.php'; ?>
+<?php include APP_INCLUDES . '/footer.php'; ?>

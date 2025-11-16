@@ -10,11 +10,11 @@
  * - Proper session management and brute force protection
  */
 
-require_once 'config.php';
+require_once __DIR__ . '/system/config.php';
 session_start();
 if (isset($_SESSION['authenticated']) && $_SESSION['authenticated'] === true) {
     if (time() - $_SESSION['login_time'] <= SESSION_TIMEOUT) {
-        header('Location: index.php');
+        header('Location: /index.php');
         exit;
     }
 }
@@ -52,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($error_message)) {
         // Try database authentication
         try {
-            require_once 'includes/db_connect.php';
+            require_once APP_INCLUDES . '/db_connect.php';
 
             $stmt = $pdo->prepare("SELECT * FROM users WHERE is_active = 1");
             $stmt->execute();
@@ -100,7 +100,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['user_color'] = $user['color'];
                 $_SESSION['user_role'] = $user['role'];
 
-                header('Location: index.php');
+                header('Location: /index.php');
                 exit;
             } else {
                 // FAILED: Login failed
@@ -149,7 +149,7 @@ $page_title = 'Login';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo $page_title . ' - ' . SITE_NAME; ?></title>
-    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="/assets/css/style.css">
 </head>
 <body>
     <div class="login-container">
