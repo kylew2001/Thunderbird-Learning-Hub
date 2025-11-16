@@ -4,9 +4,41 @@
  * Updated: 2025-11-05 (Fixed search with fallback to LIKE)
  */
 
-require_once 'includes/auth_check.php';
-require_once 'includes/db_connect.php';
-require_once 'includes/user_helpers.php';
+require_once __DIR__ . '/../includes/auth_check.php';
+require_once __DIR__ . '/../includes/db_connect.php';
+require_once __DIR__ . '/../includes/user_helpers.php';
+$include_dirs = [
+    __DIR__ . '/includes',
+    dirname(__DIR__) . '/includes',
+    dirname(__DIR__, 2) . '/includes'
+];
+
+function resolve_include_path(array $dirs, string $file): string {
+    foreach ($dirs as $dir) {
+        $candidate = rtrim($dir, '/\\') . '/' . $file;
+        if (file_exists($candidate)) {
+            return $candidate;
+        }
+    }
+    return '';
+}
+
+$auth_check = resolve_include_path($include_dirs, 'auth_check.php');
+$db_connect = resolve_include_path($include_dirs, 'db_connect.php');
+$user_helpers = resolve_include_path($include_dirs, 'user_helpers.php');
+
+foreach ([
+    'auth_check.php' => $auth_check,
+    'db_connect.php' => $db_connect,
+    'user_helpers.php' => $user_helpers,
+] as $name => $path) {
+    if (empty($path)) {
+        http_response_code(500);
+        echo "Critical include missing: {$name}";
+        exit;
+    }
+    require_once $path;
+}
 
 $page_title = 'Search Results';
 
@@ -358,7 +390,7 @@ if (!empty($search_query)) {
     }
 }
 
-include 'includes/header.php';
+include resolve_include_path($include_dirs, 'header.php');
 ?>
 
 <div class="container">
@@ -499,4 +531,4 @@ include 'includes/header.php';
 }
 </style>
 
-<?php include 'includes/footer.php'; ?>
+<?php include resolve_include_path($include_dirs, 'footer.php'); ?>

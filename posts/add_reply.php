@@ -4,8 +4,8 @@
  * Processes reply submission from post.php form
  */
 
-require_once 'includes/auth_check.php';
-require_once 'includes/db_connect.php';
+require_once __DIR__ . '/../includes/auth_check.php';
+require_once __DIR__ . '/../includes/db_connect.php';
 
 $error_message = '';
 

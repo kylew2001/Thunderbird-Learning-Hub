@@ -41,6 +41,28 @@ foreach ($training_helper_paths as $training_helper_path) {
         require_once $training_helper_path;
         break;
     }
+require_once __DIR__ . '/admin_init.php';
+$includesDir = admin_include_base();
+
+// Load training helpers if available (keeps behavior consistent with index.php)
+if (file_exists($includesDir . '/training_helpers.php')) {
+    require_admin_include('training_helpers.php');
+require_once __DIR__ . '/../includes/auth_check.php';
+require_once __DIR__ . '/../includes/db_connect.php';
+require_once __DIR__ . '/../includes/user_helpers.php';
+
+// Load training helpers if available (keeps behavior consistent with index.php)
+if (file_exists('includes/training_helpers.php')) {
+    require_once __DIR__ . '/../includes/training_helpers.php';
+require_once dirname(__DIR__) . '/includes/include_path.php';
+require_app_file('auth_check.php');
+require_app_file('db_connect.php');
+require_app_file('user_helpers.php');
+
+// Load training helpers if available (keeps behavior consistent with index.php)
+$training_helper_path = dirname(__DIR__) . '/includes/training_helpers.php';
+if (file_exists($training_helper_path)) {
+    require_once $training_helper_path;
 }
 
 // Set the page title used by header.php
@@ -48,7 +70,8 @@ $page_title = 'Training Analytics Dashboard';
 
 
 // Include standard header (HTML <head>, nav, etc.)
-include 'includes/header.php';
+include $includesDir . '/header.php';
+require_app_file('header.php');
 ?>
 
 <style>
@@ -100,7 +123,8 @@ $page_title = 'Training Analytics Dashboard';
 // Admin-only access
 if (!is_admin() && !is_super_admin()) {
     echo "<div class='alert alert-danger mt-4'>Access denied. Admin privileges required.</div>";
-    include 'includes/footer.php';
+    include $includesDir . '/footer.php';
+    require_app_file('footer.php');
     exit;
 }
 ?>
@@ -125,7 +149,8 @@ try {
 
 } catch (PDOException $e) {
     echo "<div class='alert alert-danger'>Database error: " . htmlspecialchars($e->getMessage()) . "</div>";
-    include 'includes/footer.php';
+    include $includesDir . '/footer.php';
+    require_app_file('footer.php');
     exit;
 }
 ?>
@@ -637,5 +662,6 @@ if (isset($_GET['course_id']) && isset($_GET['user_id']) &&
 
 <?php
 // Standard footer (includes your latest updates widget, bug report button, etc.)
-include 'includes/footer.php';
+include $includesDir . '/footer.php';
+require_app_file('footer.php');
 ?>
