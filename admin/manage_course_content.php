@@ -5,12 +5,13 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 // Require authentication and admin check
-require_once 'includes/auth_check.php';
+require_once dirname(__DIR__) . '/includes/include_path.php';
+require_app_file('auth_check.php');
 
 // Load database and helpers
-require_once 'includes/db_connect.php';
-require_once 'includes/training_helpers.php';
-require_once 'includes/user_helpers.php';
+require_app_file('db_connect.php');
+require_app_file('training_helpers.php');
+require_app_file('user_helpers.php');
 
 // Check if user is admin
 if (!is_admin()) {
@@ -1103,4 +1104,4 @@ document.getElementById('addContentForm').addEventListener('submit', function(e)
 });
 </script>
 
-<?php include 'includes/footer.php'; ?>
+<?php require_app_file('footer.php'); ?>
