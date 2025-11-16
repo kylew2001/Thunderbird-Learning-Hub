@@ -48,14 +48,66 @@ if (empty($includes_base)) {
 require_once $includes_base . '/auth_check.php';
 require_once $includes_base . '/db_connect.php';
 require_once $includes_base . '/user_helpers.php';
+header('Content-Type: application/json');
+
+// Resolve includes robustly to avoid path issues when called from nested routes
+$include_files = [
+    'includes/auth_check.php',
+    'includes/db_connect.php',
+    'includes/user_helpers.php',
+];
+
+foreach ($include_files as $include) {
+    $paths = [
+        __DIR__ . '/../' . $include,
+        dirname(__DIR__) . '/' . $include,
+        __DIR__ . '/' . $include,
+    ];
+
+    $resolved = null;
+    foreach ($paths as $path) {
+        if (file_exists($path)) {
+            $resolved = $path;
+            break;
+        }
+    }
+
+    if (!$resolved) {
+        http_response_code(500);
+        echo json_encode([
+            'success' => false,
+            'error' => 'Missing required include file for pin toggle',
+        ]);
+        exit;
+    }
+
+    require_once $resolved;
+}
+$includes_dir = dirname(__DIR__) . '/includes';
+if (!is_dir($includes_dir)) {
+    $fallback_includes = [__DIR__ . '/includes', dirname(__DIR__, 2) . '/includes'];
+    foreach ($fallback_includes as $path) {
+        if (is_dir($path)) {
+            $includes_dir = $path;
+            break;
+        }
+    }
+}
+
+if (!is_dir($includes_dir)) {
+    http_response_code(500);
+    exit('Critical includes path is missing.');
+}
+
+require_once $includes_dir . '/auth_check.php';
+require_once $includes_dir . '/db_connect.php';
+require_once $includes_dir . '/user_helpers.php';
 
 // Disallow pinning for training users
 if (function_exists('is_training_user') && is_training_user()) {
     echo json_encode(['success' => false, 'error' => 'Pinning is disabled for training users']);
     exit;
 }
-
-header('Content-Type: application/json');
 
 // Only authenticated users can pin/unpin
 if (!isset($_SESSION['user_id'])) {

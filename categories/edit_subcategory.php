@@ -53,6 +53,25 @@ if (empty($includes_base)) {
 require_once $includes_base . '/auth_check.php';
 require_once $includes_base . '/db_connect.php';
 require_once $includes_base . '/user_helpers.php';
+$includes_dir = dirname(__DIR__) . '/includes';
+if (!is_dir($includes_dir)) {
+    $fallback_includes = [__DIR__ . '/includes', dirname(__DIR__, 2) . '/includes'];
+    foreach ($fallback_includes as $path) {
+        if (is_dir($path)) {
+            $includes_dir = $path;
+            break;
+        }
+    }
+}
+
+if (!is_dir($includes_dir)) {
+    http_response_code(500);
+    exit('Critical includes path is missing.');
+}
+
+require_once $includes_dir . '/auth_check.php';
+require_once $includes_dir . '/db_connect.php';
+require_once $includes_dir . '/user_helpers.php';
 
 $page_title = 'Edit Subcategory';
 $error_message = '';
@@ -166,6 +185,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $subcategory) {
 }
 
 include $includes_base . '/header.php';
+include $includes_dir . '/header.php';
 ?>
 
 <div class="container">
@@ -343,3 +363,4 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 <?php include $includes_base . '/footer.php'; ?>
+<?php include $includes_dir . '/footer.php'; ?>
