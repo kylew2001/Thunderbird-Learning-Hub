@@ -20,6 +20,28 @@
  * - User: Can only edit own profile
  */
 
+// Robust include resolver to handle nested directory execution contexts
+function require_project_file($relative_path) {
+    $candidates = [
+        __DIR__ . '/' . ltrim($relative_path, '/'),
+        dirname(__DIR__) . '/' . ltrim($relative_path, '/'),
+        realpath(dirname(__DIR__)) . '/' . ltrim($relative_path, '/'),
+    ];
+
+    foreach ($candidates as $candidate) {
+        if ($candidate && file_exists($candidate)) {
+            require_once $candidate;
+            return;
+        }
+    }
+
+    http_response_code(500);
+    die('Required system file missing.');
+}
+
+require_project_file('includes/auth_check.php');
+require_project_file('includes/db_connect.php');
+require_project_file('includes/user_helpers.php');
 require_once __DIR__ . '/admin_bootstrap.php';
 
 require_admin_include('auth_check.php');
