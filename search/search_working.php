@@ -4,9 +4,9 @@
  * Updated: 2025-11-05 (Fixed search with fallback to LIKE)
  */
 
-require_once 'includes/auth_check.php';
-require_once 'includes/db_connect.php';
-require_once 'includes/user_helpers.php';
+require_once __DIR__ . '/../includes/auth_check.php';
+require_once __DIR__ . '/../includes/db_connect.php';
+require_once __DIR__ . '/../includes/user_helpers.php';
 
 $page_title = 'Search Results';
 

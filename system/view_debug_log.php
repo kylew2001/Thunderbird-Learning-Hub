@@ -7,8 +7,8 @@
  * Purpose: View assignment debugging information
  */
 
-require_once 'includes/auth_check.php';
-require_once 'includes/user_helpers.php';
+require_once __DIR__ . '/../includes/auth_check.php';
+require_once __DIR__ . '/../includes/user_helpers.php';
 
 // Allow access if debug console is enabled by super admin or if user is admin
 $debug_enabled = isset($_COOKIE['debug_console_enabled']) && $_COOKIE['debug_console_enabled'] === 'true';

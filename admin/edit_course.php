@@ -5,12 +5,12 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 // Require authentication and admin check
-require_once 'includes/auth_check.php';
+require_once __DIR__ . '/../includes/auth_check.php';
 
 // Load database and helpers
-require_once 'includes/db_connect.php';
-require_once 'includes/training_helpers.php';
-require_once 'includes/user_helpers.php';
+require_once __DIR__ . '/../includes/db_connect.php';
+require_once __DIR__ . '/../includes/training_helpers.php';
+require_once __DIR__ . '/../includes/user_helpers.php';
 
 // Check if user is admin
 if (!is_admin()) {
