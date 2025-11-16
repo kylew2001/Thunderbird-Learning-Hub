@@ -6,9 +6,25 @@
  * Created: 2025-11-03 (Edit Request System)
  */
 
-require_once 'includes/auth_check.php';
-require_once 'includes/db_connect.php';
-require_once 'includes/user_helpers.php';
+$includes_dir = dirname(__DIR__) . '/includes';
+if (!is_dir($includes_dir)) {
+    $fallback_includes = [__DIR__ . '/includes', dirname(__DIR__, 2) . '/includes'];
+    foreach ($fallback_includes as $path) {
+        if (is_dir($path)) {
+            $includes_dir = $path;
+            break;
+        }
+    }
+}
+
+if (!is_dir($includes_dir)) {
+    http_response_code(500);
+    exit('Critical includes path is missing.');
+}
+
+require_once $includes_dir . '/auth_check.php';
+require_once $includes_dir . '/db_connect.php';
+require_once $includes_dir . '/user_helpers.php';
 
 $page_title = 'Request Edit Subcategory';
 $error_message = '';
@@ -108,7 +124,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $subcategory && $edit_requests_tabl
     }
 }
 
-include 'includes/header.php';
+include $includes_dir . '/header.php';
 ?>
 
 <div class="container">
@@ -227,4 +243,4 @@ include 'includes/header.php';
     <?php endif; ?>
 </div>
 
-<?php include 'includes/footer.php'; ?>
+<?php include $includes_dir . '/footer.php'; ?>

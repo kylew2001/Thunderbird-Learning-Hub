@@ -5,8 +5,24 @@
  * CASCADE delete will handle related records automatically
  */
 
-require_once 'includes/auth_check.php';
-require_once 'includes/db_connect.php';
+$includes_dir = dirname(__DIR__) . '/includes';
+if (!is_dir($includes_dir)) {
+    $fallback_includes = [__DIR__ . '/includes', dirname(__DIR__, 2) . '/includes'];
+    foreach ($fallback_includes as $path) {
+        if (is_dir($path)) {
+            $includes_dir = $path;
+            break;
+        }
+    }
+}
+
+if (!is_dir($includes_dir)) {
+    http_response_code(500);
+    exit('Critical includes path is missing.');
+}
+
+require_once $includes_dir . '/auth_check.php';
+require_once $includes_dir . '/db_connect.php';
 
 // Get subcategory ID
 $subcategory_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
