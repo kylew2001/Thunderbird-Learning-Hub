@@ -5,8 +5,8 @@
  * Purpose: Test assignment functionality independently of web interface
  */
 
-require_once 'includes/db_connect.php';
-require_once 'includes/training_helpers.php';
+require_once __DIR__ . '/../includes/db_connect.php';
+require_once __DIR__ . '/../includes/training_helpers.php';
 
 // Test data
 $test_course_id = 1; // Use an existing course ID

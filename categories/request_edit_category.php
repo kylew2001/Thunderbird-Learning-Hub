@@ -6,9 +6,72 @@
  * Created: 2025-11-03 (Edit Request System)
  */
 
-require_once 'includes/auth_check.php';
-require_once 'includes/db_connect.php';
-require_once 'includes/user_helpers.php';
+require_once __DIR__ . '/../includes/auth_check.php';
+require_once __DIR__ . '/../includes/db_connect.php';
+require_once __DIR__ . '/../includes/user_helpers.php';
+$config_path = dirname(__DIR__) . '/system/config.php';
+if (file_exists($config_path)) {
+    require_once $config_path;
+}
+
+if (!function_exists('resolve_includes_base')) {
+    function resolve_includes_base(): string {
+        static $base = null;
+
+        if ($base !== null) {
+            return $base;
+        }
+
+        $candidates = [];
+
+        if (defined('APP_INCLUDES')) {
+            $candidates[] = rtrim(APP_INCLUDES, '/');
+        }
+
+        $candidates[] = __DIR__ . '/includes';
+        $candidates[] = __DIR__ . '/../includes';
+        $candidates[] = dirname(__DIR__) . '/includes';
+
+        foreach ($candidates as $candidate) {
+            if ($candidate && is_dir($candidate)) {
+                $base = $candidate;
+                return $base;
+            }
+        }
+
+        return '';
+    }
+}
+
+$includes_base = resolve_includes_base();
+if (empty($includes_base)) {
+    http_response_code(500);
+    echo 'Required includes directory is missing.';
+    exit;
+}
+
+require_once $includes_base . '/auth_check.php';
+require_once $includes_base . '/db_connect.php';
+require_once $includes_base . '/user_helpers.php';
+$includes_dir = dirname(__DIR__) . '/includes';
+if (!is_dir($includes_dir)) {
+    $fallback_includes = [__DIR__ . '/includes', dirname(__DIR__, 2) . '/includes'];
+    foreach ($fallback_includes as $path) {
+        if (is_dir($path)) {
+            $includes_dir = $path;
+            break;
+        }
+    }
+}
+
+if (!is_dir($includes_dir)) {
+    http_response_code(500);
+    exit('Critical includes path is missing.');
+}
+
+require_once $includes_dir . '/auth_check.php';
+require_once $includes_dir . '/db_connect.php';
+require_once $includes_dir . '/user_helpers.php';
 
 $page_title = 'Request Edit Category';
 $error_message = '';
@@ -108,7 +171,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $category && $edit_requests_table_e
     }
 }
 
-include 'includes/header.php';
+include $includes_base . '/header.php';
+include $includes_dir . '/header.php';
 ?>
 
 <div class="container">
@@ -225,4 +289,5 @@ include 'includes/header.php';
     <?php endif; ?>
 </div>
 
-<?php include 'includes/footer.php'; ?>
+<?php include $includes_base . '/footer.php'; ?>
+<?php include $includes_dir . '/footer.php'; ?>
