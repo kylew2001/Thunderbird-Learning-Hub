@@ -5,13 +5,42 @@
  * Then drop your custom logic + markup into the container below.
  */
 
-require_once 'includes/auth_check.php';
-require_once 'includes/db_connect.php';
-require_once 'includes/user_helpers.php';
+// Robust include loader to tolerate different working directories
+$include_loader = function (string $relativePath) {
+    $paths = [
+        __DIR__ . '/' . ltrim($relativePath, '/'),
+        __DIR__ . '/../' . ltrim($relativePath, '/'),
+        dirname(__DIR__) . '/' . ltrim($relativePath, '/'),
+    ];
+
+    foreach ($paths as $path) {
+        if (file_exists($path)) {
+            require_once $path;
+            return;
+        }
+    }
+
+    http_response_code(500);
+    echo "<div class='alert alert-danger mt-4'>Required include missing: " . htmlspecialchars($relativePath) . "</div>";
+    exit;
+};
+
+$include_loader('includes/auth_check.php');
+$include_loader('includes/db_connect.php');
+$include_loader('includes/user_helpers.php');
 
 // Load training helpers if available (keeps behavior consistent with index.php)
-if (file_exists('includes/training_helpers.php')) {
-    require_once 'includes/training_helpers.php';
+$training_helper_paths = [
+    __DIR__ . '/includes/training_helpers.php',
+    __DIR__ . '/../includes/training_helpers.php',
+    dirname(__DIR__) . '/includes/training_helpers.php',
+];
+
+foreach ($training_helper_paths as $training_helper_path) {
+    if (file_exists($training_helper_path)) {
+        require_once $training_helper_path;
+        break;
+    }
 }
 
 // Set the page title used by header.php
