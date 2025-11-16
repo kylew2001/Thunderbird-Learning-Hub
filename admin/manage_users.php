@@ -20,9 +20,13 @@
  * - User: Can only edit own profile
  */
 
-require_once 'includes/auth_check.php';
-require_once 'includes/db_connect.php';
-require_once 'includes/user_helpers.php';
+require_once __DIR__ . '/../includes/auth_check.php';
+require_once __DIR__ . '/../includes/db_connect.php';
+require_once __DIR__ . '/../includes/user_helpers.php';
+require_once dirname(__DIR__) . '/includes/include_path.php';
+require_app_file('auth_check.php');
+require_app_file('db_connect.php');
+require_app_file('user_helpers.php');
 
 // Only allow admin users
 if (!is_admin()) {
@@ -256,7 +260,7 @@ if ($users_table_exists) {
     }
 }
 
-include 'includes/header.php';
+require_app_file('header.php');
 ?>
 
 <div class="container">
@@ -641,4 +645,4 @@ window.onclick = function(event) {
 }
 </script>
 
-<?php include 'includes/footer.php'; ?>
+<?php require_app_file('footer.php'); ?>

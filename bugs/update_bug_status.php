@@ -25,6 +25,8 @@ if ($includes_dir === null) {
 
 require_once $includes_dir . '/auth_check.php';
 require_once $includes_dir . '/db_connect.php';
+require_once __DIR__ . '/../includes/auth_check.php';
+require_once __DIR__ . '/../includes/db_connect.php';
 
 // Check if user is super user
 if ($_SESSION['user_id'] != 1) {
