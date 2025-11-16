@@ -9,9 +9,50 @@
  * - Complete database-driven user system integration
  */
 
-require_once 'includes/auth_check.php';
-require_once 'includes/db_connect.php';
-require_once 'includes/user_helpers.php';
+$config_path = dirname(__DIR__) . '/system/config.php';
+if (file_exists($config_path)) {
+    require_once $config_path;
+}
+
+if (!function_exists('resolve_includes_base')) {
+    function resolve_includes_base(): string {
+        static $base = null;
+
+        if ($base !== null) {
+            return $base;
+        }
+
+        $candidates = [];
+
+        if (defined('APP_INCLUDES')) {
+            $candidates[] = rtrim(APP_INCLUDES, '/');
+        }
+
+        $candidates[] = __DIR__ . '/includes';
+        $candidates[] = __DIR__ . '/../includes';
+        $candidates[] = dirname(__DIR__) . '/includes';
+
+        foreach ($candidates as $candidate) {
+            if ($candidate && is_dir($candidate)) {
+                $base = $candidate;
+                return $base;
+            }
+        }
+
+        return '';
+    }
+}
+
+$includes_base = resolve_includes_base();
+if (empty($includes_base)) {
+    http_response_code(500);
+    echo 'Required includes directory is missing.';
+    exit;
+}
+
+require_once $includes_base . '/auth_check.php';
+require_once $includes_base . '/db_connect.php';
+require_once $includes_base . '/user_helpers.php';
 
 $page_title = 'Posts';
 $error_message = '';
@@ -276,12 +317,12 @@ function create_preview($html_content, $length = 200) {
     return $text;
 }
 
-include 'includes/header.php';
+include $includes_base . '/header.php';
 ?>
 
 <div class="container">
     <?php
-    require_once __DIR__ . '/includes/search_widget.php';
+    require_once $includes_base . '/search_widget.php';
     // Point to your known-good endpoint that works like index:
     render_search_bar('search_working.php');
     ?>
@@ -546,4 +587,4 @@ include 'includes/header.php';
     <?php endif; ?>
 </div>
 
-<?php include 'includes/footer.php'; ?>
+<?php include $includes_base . '/footer.php'; ?>
